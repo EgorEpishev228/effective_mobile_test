@@ -1,21 +1,3 @@
----
-title: API v
-language_tabs:
-  - shell: cURL
-  - go: Go
-  - python: Python
-language_clients:
-  - shell: ""
-  - go: ""
-  - python: ""
-toc_footers: []
-includes: []
-search: true
-highlight_theme: darkula
-headingLevel: 2
-
----
-
 <!-- Generator: Widdershins v4.0.1 -->
 
 <h1 id=""> Effective Mobile Тестовое</h1>
