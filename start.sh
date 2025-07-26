@@ -26,7 +26,7 @@ echo "Running test..."
 if go test ./...; then
     echo "All tests passed..."
 else
-    exho "Tests failed! Stopping deployment."
+    echo "Tests failed! Stopping deployment."
     exit 1
 fi
 
