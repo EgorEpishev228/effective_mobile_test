@@ -1,0 +1,230 @@
+definitions:
+  handlers.ErrorResponse:
+    description: Error response object
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  handlers.SuccessCostResponse:
+    description: Success calculate object
+    properties:
+      total:
+        type: integer
+    type: object
+  handlers.SuccessResponse:
+    description: Success response object
+    properties:
+      message:
+        example: Subscription deleted successfully
+        type: string
+    type: object
+  handlers.UpdateSubscriptionRequest:
+    properties:
+      end_date:
+        type: string
+      price:
+        type: integer
+      service_name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    type: object
+  subscription.Subscription:
+    properties:
+      created_at:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: string
+      price:
+        type: integer
+      service_name:
+        type: string
+      start_date:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    required:
+    - price
+    - service_name
+    - start_date
+    - user_id
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/subscriptions:
+    delete:
+      consumes:
+      - application/json
+      description: Удаление подписки по её id
+      parameters:
+      - description: Subscription ID (UUID format)
+        example: 550e8400-e29b-41d4-a716-446655440000
+        format: uuid
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            $ref: '#/definitions/handlers.SuccessResponse'
+        "400":
+          description: Bad request - missing ID
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Subscription not found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Delete subscription
+      tags:
+      - subscriptions
+    get:
+      consumes:
+      - application/json
+      description: Получение подписки по её id. Если id не указано, возвращаются все
+      parameters:
+      - description: Subscription ID (UUID format)
+        format: uuid
+        in: query
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single subscription when ID provided
+          schema:
+            $ref: '#/definitions/subscription.Subscription'
+        "404":
+          description: Subscription not found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get subscriptions
+      tags:
+      - subscriptions
+    post:
+      consumes:
+      - application/json
+      description: Создание новой подписки
+      parameters:
+      - description: Body of the request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/subscription.Subscription'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/subscription.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Create a new subscription
+      tags:
+      - subscriptions
+    put:
+      consumes:
+      - application/json
+      description: Обновление подписки по её id
+      parameters:
+      - description: Subscription ID (UUID format)
+        format: uuid
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Subscription object with updated fields
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated subscription
+          schema:
+            $ref: '#/definitions/subscription.Subscription'
+        "400":
+          description: Bad request - missing ID or invalid body
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Subscription not found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Update subscription
+      tags:
+      - subscriptions
+  /api/v1/subscriptions/calculate:
+    get:
+      consumes:
+      - application/json
+      description: Подсчет стоимости подписки по фильтрам
+      parameters:
+      - description: Filter by user ID (UUID format)
+        example: 550e8400-e29b-41d4-a716-446655440000
+        format: uuid
+        in: query
+        name: user_id
+        type: string
+      - description: Filter by service name
+        in: query
+        name: service_name
+        type: string
+      - description: Filter by start date (MM-YYYY format)
+        format: MM-YYYY
+        in: query
+        name: start_date
+        type: string
+      - description: Filter by end date (MM-YYYY format)
+        format: MM-YYYY
+        in: query
+        name: end_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Total cost calculation result
+          schema:
+            $ref: '#/definitions/handlers.SuccessCostResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Calculate total cost of subscriptions
+      tags:
+      - subscriptions
+swagger: "2.0"

@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: subscription-api
+    ports:
+      - "${SERVER_PORT}:${SERVER_INNER_PORT}"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_DSN=host=${DATABASE_HOST} user=${DATABASE_USER} password=${DATABASE_PASSWORD} dbname=${DATABASE_NAME} port=${DATABASE_PORT} sslmode=disable
+    networks:
+      - subscription-api
+    restart: unless-stopped
+  
+  db:
+    image: postgres:latest
+    container_name: subscription-db
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_INNER_PORT}"
+    networks:
+      - subscription-api
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+  
+volumes:
+  pgdata:
+  
+networks:
+  subscription-api:

@@ -1,0 +1,12 @@
+prod:
+  database:
+    dns:
+      host: db
+      user: postgres
+      password: postgres
+      dbname: subscriptions
+      port: 5432
+      sslmode: disable
+  server:
+    host: "0.0.0.0"
+    port: 8080
